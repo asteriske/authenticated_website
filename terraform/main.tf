@@ -42,11 +42,13 @@ resource "aws_s3_bucket_policy" "my_s3_bucket" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid       = "PublicReadGetObject"
+        Sid       = "CloudFrontReadGetObject"
         Effect    = "Allow"
-        Principal = "*"
-        Action    = "s3:GetObject"
-        Resource  = "${aws_s3_bucket.my_s3_bucket.arn}/*"
+        Principal = {
+          AWS = aws_cloudfront_origin_access_identity.oai.iam_arn
+        }
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.my_s3_bucket.arn}/*"
       },
     ]
   })
