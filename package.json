@@ -3,9 +3,12 @@
   "version": "1.0.0",
   "description": "AWS Lambda functions",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "dependencies": {
     "aws-jwt-verify": "^4.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
