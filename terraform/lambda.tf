@@ -1,3 +1,24 @@
+# CloudWatch Logs policy
+resource "aws_iam_role_policy" "lambda_cloudwatch_logs" {
+  name = "lambda_cloudwatch_logs"
+  role = aws_iam_role.lambda_edge_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*"
+      }
+    ]
+  })
+}
+
 # IAM role for Lambda@Edge
 resource "aws_iam_role" "lambda_edge_role" {
   name = "lambda_edge_role"
@@ -20,16 +41,21 @@ resource "aws_iam_role" "lambda_edge_role" {
 }
 
 # Lambda function for authentication
-# resource "aws_lambda_function" "auth_lambda" {
-#   filename      = "auth_lambda.zip"
-#   function_name = "auth_lambda"
-#   role          = aws_iam_role.lambda_edge_role.arn
-#   handler       = "index.handler"
-#   runtime       = "nodejs14.x"
-#   publish       = true
+resource "aws_lambda_function" "auth_lambda" {
+  filename         = "../dist/auth-lambda.zip"
+  function_name    = "auth_lambda"
+  role            = aws_iam_role.lambda_edge_role.arn
+  handler         = "index.handler"
+  runtime         = "nodejs18.x"
+  publish         = true
 
-#   # This is a placeholder. You need to create the auth_lambda.zip file with your authentication logic
-# }
+  environment {
+    variables = {
+      COGNITO_USER_POOL_ID = var.cognito_user_pool_id
+      COGNITO_CLIENT_ID    = var.cognito_client_id
+    }
+  }
+}
 
 # CloudFront distribution
 # resource "aws_cloudfront_distribution" "s3_distribution" {
