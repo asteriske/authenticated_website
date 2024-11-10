@@ -1,13 +1,12 @@
 const { CognitoJwtVerifier } = require("aws-jwt-verify");
 
-// Initialize the verifier outside the handler for better performance
-const verifier = CognitoJwtVerifier.create({
-    userPoolId: process.env.COGNITO_USER_POOL_ID,
-    tokenUse: "access",
-    clientId: process.env.COGNITO_CLIENT_ID,
-});
-
 exports.handler = async (event) => {
+    // Initialize the verifier
+    const verifier = CognitoJwtVerifier.create({
+        userPoolId: process.env.COGNITO_USER_POOL_ID,
+        tokenUse: "access",
+        clientId: process.env.COGNITO_CLIENT_ID,
+    });
     try {
         // Parse the authorization header
         const authHeader = event.headers.Authorization || event.headers.authorization;
