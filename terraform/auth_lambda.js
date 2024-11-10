@@ -1,3 +1,12 @@
+const { CognitoJwtVerifier } = require("aws-jwt-verify");
+
+// Initialize the verifier outside the handler for better performance
+const verifier = CognitoJwtVerifier.create({
+    userPoolId: process.env.COGNITO_USER_POOL_ID,
+    tokenUse: "access",
+    clientId: process.env.COGNITO_CLIENT_ID,
+});
+
 exports.handler = async (event) => {
     try {
         // Parse the authorization header
@@ -25,17 +34,28 @@ exports.handler = async (event) => {
         // Extract the token
         const token = authHeader.split(' ')[1];
         
-        // TODO: Implement actual token validation logic here
-        // This is where you would validate against your auth provider
-        
-        // For now, return a success response
-        return {
-            statusCode: 200,
-            body: JSON.stringify({
-                message: 'Authentication successful',
-                token: token
-            })
-        };
+        try {
+            // Verify the JWT token
+            const payload = await verifier.verify(token);
+            
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
+                    message: 'Authentication successful',
+                    userId: payload.sub,
+                    username: payload.username,
+                    scope: payload.scope
+                })
+            };
+        } catch (err) {
+            console.error('Token validation failed:', err);
+            return {
+                statusCode: 401,
+                body: JSON.stringify({
+                    message: 'Invalid token'
+                })
+            };
+        }
 
     } catch (error) {
         console.error('Authentication error:', error);
