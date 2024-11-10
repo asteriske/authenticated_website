@@ -1,0 +1,11 @@
+{
+  "name": "lambda-functions",
+  "version": "1.0.0",
+  "description": "AWS Lambda functions",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "aws-jwt-verify": "^4.0.0"
+  }
+}
