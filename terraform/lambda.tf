@@ -138,6 +138,11 @@ resource "aws_lambda_function" "auth_lambda" {
 #   }
 # }
 
+# Output the Lambda function name
+output "auth_lambda_function_name" {
+  value = aws_lambda_function.auth_lambda.function_name
+}
+
 # CloudFront Origin Access Identity
 resource "aws_cloudfront_origin_access_identity" "oai" {
   comment = "OAI for ${aws_s3_bucket.bucket.id}"
