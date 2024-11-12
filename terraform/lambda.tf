@@ -81,6 +81,11 @@ resource "aws_lambda_function" "auth_lambda" {
       COGNITO_CLIENT_ID    = aws_cognito_user_pool_client.client.id
     }
   }
+
+  depends_on = [
+    aws_cognito_user_pool.main,
+    aws_cognito_user_pool_client.client
+  ]
 }
 
 # CloudFront distribution
