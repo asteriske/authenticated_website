@@ -1,3 +1,29 @@
+# Cognito User Pool
+resource "aws_cognito_user_pool" "main" {
+  name = "auth-user-pool"
+
+  password_policy {
+    minimum_length    = 8
+    require_lowercase = true
+    require_numbers   = true
+    require_symbols   = true
+    require_uppercase = true
+  }
+
+  auto_verified_attributes = ["email"]
+}
+
+# Cognito User Pool Client
+resource "aws_cognito_user_pool_client" "client" {
+  name         = "auth-client"
+  user_pool_id = aws_cognito_user_pool.main.id
+
+  explicit_auth_flows = [
+    "ALLOW_USER_PASSWORD_AUTH",
+    "ALLOW_REFRESH_TOKEN_AUTH"
+  ]
+}
+
 # CloudWatch Logs policy
 resource "aws_iam_role_policy" "lambda_cloudwatch_logs" {
   name = "lambda_cloudwatch_logs"
@@ -51,8 +77,8 @@ resource "aws_lambda_function" "auth_lambda" {
 
   environment {
     variables = {
-      COGNITO_USER_POOL_ID = var.cognito_user_pool_id
-      COGNITO_CLIENT_ID    = var.cognito_client_id
+      COGNITO_USER_POOL_ID = aws_cognito_user_pool.main.id
+      COGNITO_CLIENT_ID    = aws_cognito_user_pool_client.client.id
     }
   }
 }
