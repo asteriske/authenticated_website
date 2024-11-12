@@ -19,7 +19,7 @@ fi
 if ! aws cognito-idp admin-create-user \
     --user-pool-id $USER_POOL_ID \
     --username user123 \
-    --temporary-password pass123 \
+    --temporary-password Pass123!@ \
     --message-action SUPPRESS; then
     echo "Failed to create user. User might already exist or there might be an error."
     exit 1
@@ -31,14 +31,14 @@ echo "User created successfully. Setting permanent password..."
 aws cognito-idp admin-set-user-password \
     --user-pool-id $USER_POOL_ID \
     --username user123 \
-    --password pass123 \
+    --password Pass123!@ \
     --permanent
 
 # Initiate auth and get the token
 TOKEN=$(aws cognito-idp initiate-auth \
     --auth-flow USER_PASSWORD_AUTH \
     --client-id $CLIENT_ID \
-    --auth-parameters USERNAME=user123,PASSWORD=pass123 \
+    --auth-parameters USERNAME=user123,PASSWORD=Pass123!@ \
     --query 'AuthenticationResult.AccessToken' \
     --output text)
 
