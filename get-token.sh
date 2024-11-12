@@ -43,6 +43,11 @@ TOKEN=$(aws cognito-idp initiate-auth \
     --output text)
 
 # Update test-event.json with the token
+if [ -z "$TOKEN" ]; then
+    echo "Error: No token received"
+    exit 1
+fi
+
 echo "Token received: $TOKEN"
 
 # Create new test-event.json with the token
@@ -50,6 +55,11 @@ cat > test-event.json << EOF
 {
   "headers": {
     "Authorization": "Bearer $TOKEN"
+  },
+  "requestContext": {
+    "http": {
+      "method": "GET"
+    }
   }
 }
 EOF
