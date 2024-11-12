@@ -43,6 +43,15 @@ TOKEN=$(aws cognito-idp initiate-auth \
     --output text)
 
 # Update test-event.json with the token
-sed -i "s|Bearer YOUR_TEST_JWT_TOKEN|Bearer $TOKEN|" test-event.json
+echo "Token received: $TOKEN"
+
+# Create new test-event.json with the token
+cat > test-event.json << EOF
+{
+  "headers": {
+    "Authorization": "Bearer $TOKEN"
+  }
+}
+EOF
 
 echo "Token has been updated in test-event.json"
