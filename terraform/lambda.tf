@@ -143,6 +143,16 @@ output "auth_lambda_function_name" {
   value = aws_lambda_function.auth_lambda.function_name
 }
 
+# Output Cognito User Pool ID
+output "cognito_user_pool_id" {
+  value = aws_cognito_user_pool.main.id
+}
+
+# Output Cognito Client ID
+output "cognito_client_id" {
+  value = aws_cognito_user_pool_client.client.id
+}
+
 # CloudFront Origin Access Identity
 resource "aws_cloudfront_origin_access_identity" "oai" {
   comment = "OAI for ${aws_s3_bucket.bucket.id}"
