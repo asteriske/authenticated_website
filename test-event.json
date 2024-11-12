@@ -1,0 +1,5 @@
+{
+  "headers": {
+    "Authorization": "YOUR_TEST_JWT_TOKEN"
+  }
+}
