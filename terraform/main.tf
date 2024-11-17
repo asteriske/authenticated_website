@@ -1,3 +1,12 @@
+# Configure the AWS Provider and Backend
+terraform {
+  backend "s3" {
+    bucket = "terraform-state-bucket-name"
+    key    = "terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
 # This creates an AWS bucket and a lambda function
 
 resource "aws_s3_bucket" "my_s3_bucket" {
