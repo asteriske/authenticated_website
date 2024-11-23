@@ -1,5 +1,11 @@
 # Configure the AWS Provider and Backend
 terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      configuration_aliases = [aws.us-east-1]
+    }
+  }
   backend "s3" {
     bucket = "terraform-state-bucket-name"
     key    = "terraform.tfstate"
@@ -9,6 +15,12 @@ terraform {
 
 locals {
   env = "dev"
+}
+
+# Provider for us-east-1 region (required for Lambda@Edge)
+provider "aws" {
+  alias  = "us-east-1"
+  region = "us-east-1"
 }
 
 # This creates an AWS bucket and a lambda function

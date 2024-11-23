@@ -74,6 +74,7 @@ resource "aws_lambda_function" "auth_lambda" {
   handler         = "index.handler"
   runtime         = "nodejs18.x"
   publish         = true
+  provider        = aws.us-east-1  # Specify us-east-1 provider for Lambda@Edge
 
   environment {
     variables = {
