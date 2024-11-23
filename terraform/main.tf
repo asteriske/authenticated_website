@@ -6,11 +6,7 @@ terraform {
       configuration_aliases = [aws.us-east-1]
     }
   }
-  backend "s3" {
-    bucket = "terraform-state-bucket-name"
-    key    = "terraform.tfstate"
-    region = "us-east-1"
-  }
+  backend "s3" {}
 }
 
 locals {
