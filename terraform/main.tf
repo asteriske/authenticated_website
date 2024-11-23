@@ -6,7 +6,9 @@ terraform {
       configuration_aliases = [aws.us-east-1]
     }
   }
-  backend "s3" {}
+  backend "s3" {
+     key = "projects/authenticated_website/terraform.tfstate"
+  }
 }
 
 locals {
@@ -60,21 +62,21 @@ resource "aws_s3_bucket_acl" "project_bucket" {
 }
 
 # allow CloudFront read access
-# resource "aws_s3_bucket_policy" "project_bucket" {
-#   bucket = aws_s3_bucket.project_bucket.id
+resource "aws_s3_bucket_policy" "project_bucket" {
+  bucket = aws_s3_bucket.project_bucket.id
 
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Sid       = "CloudFrontReadGetObject"
-#         Effect    = "Allow"
-#         Principal = {
-#           AWS = aws_cloudfront_origin_access_identity.oai.iam_arn
-#         }
-#         Action   = "s3:GetObject"
-#         Resource = "${aws_s3_bucket.project_bucket.arn}/*"
-#       },
-#     ]
-#   })
-# }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "CloudFrontReadGetObject"
+        Effect    = "Allow"
+        Principal = {
+          AWS = aws_cloudfront_origin_access_identity.oai.iam_arn
+        }
+        Action   = "s3:GetObject"
+        Resource = "${aws_s3_bucket.project_bucket.arn}/*"
+      },
+    ]
+  })
+}
