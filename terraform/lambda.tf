@@ -24,26 +24,26 @@ resource "aws_cognito_user_pool_client" "client" {
   ]
 }
 
-# CloudWatch Logs policy
-resource "aws_iam_role_policy" "lambda_cloudwatch_logs" {
-  name = "lambda_cloudwatch_logs"
-  role = aws_iam_role.lambda_edge_role.id
+# # CloudWatch Logs policy
+# resource "aws_iam_role_policy" "lambda_cloudwatch_logs" {
+#   name = "lambda_cloudwatch_logs"
+#   role = aws_iam_role.lambda_edge_role.id
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ]
-        Resource = "arn:aws:logs:*:*:*"
-      }
-    ]
-  })
-}
+#   policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Effect = "Allow"
+#         Action = [
+#           "logs:CreateLogGroup",
+#           "logs:CreateLogStream",
+#           "logs:PutLogEvents"
+#         ]
+#         Resource = "arn:aws:logs:*:*:*"
+#       }
+#     ]
+#   })
+# }
 
 # IAM role for Lambda@Edge
 resource "aws_iam_role" "lambda_edge_role" {
@@ -89,71 +89,57 @@ resource "aws_lambda_function" "auth_lambda" {
 }
 
 # CloudFront distribution
-# resource "aws_cloudfront_distribution" "s3_distribution" {
-#   origin {
-#     domain_name = aws_s3_bucket.bucket.bucket_regional_domain_name
-#     origin_id   = "S3-${aws_s3_bucket.bucket.id}"
+resource "aws_cloudfront_distribution" "s3_distribution" {
+  origin {
+    domain_name = aws_s3_bucket.project_bucket.bucket_regional_domain_name
+    origin_id   = "S3-${aws_s3_bucket.project_bucket.id}"
 
-#     s3_origin_config {
-#       origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
-#     }
-#   }
+    s3_origin_config {
+      origin_access_identity = aws_cloudfront_origin_access_identity.oai.cloudfront_access_identity_path
+    }
+  }
 
-#   enabled             = true
-#   is_ipv6_enabled     = true
-#   default_root_object = "index.html"
+  enabled             = true
+  is_ipv6_enabled     = true
+  default_root_object = "index.html"
 
-#   default_cache_behavior {
-#     allowed_methods  = ["GET", "HEAD"]
-#     cached_methods   = ["GET", "HEAD"]
-#     target_origin_id = "S3-${aws_s3_bucket.bucket.id}"
+  default_cache_behavior {
+    allowed_methods  = ["GET", "HEAD"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "S3-${aws_s3_bucket.project_bucket.id}"
 
-#     forwarded_values {
-#       query_string = false
-#       cookies {
-#         forward = "none"
-#       }
-#     }
+    forwarded_values {
+      query_string = false
+      cookies {
+        forward = "none"
+      }
+    }
 
-#     viewer_protocol_policy = "redirect-to-https"
-#     min_ttl                = 0
-#     default_ttl            = 3600
-#     max_ttl                = 86400
+    viewer_protocol_policy = "redirect-to-https"
+    min_ttl                = 0
+    default_ttl            = 3600
+    max_ttl                = 86400
 
-#     lambda_function_association {
-#       event_type   = "viewer-request"
-#       lambda_arn   = aws_lambda_function.auth_lambda.qualified_arn
-#       include_body = false
-#     }
-#   }
+    lambda_function_association {
+      event_type   = "viewer-request"
+      lambda_arn   = aws_lambda_function.auth_lambda.qualified_arn
+      include_body = false
+    }
+  }
 
-#   restrictions {
-#     geo_restriction {
-#       restriction_type = "none"
-#     }
-#   }
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
 
-#   viewer_certificate {
-#     cloudfront_default_certificate = true
-#   }
-# }
-
-# Output the Lambda function name
-output "auth_lambda_function_name" {
-  value = aws_lambda_function.auth_lambda.function_name
+  viewer_certificate {
+    cloudfront_default_certificate = true
+  }
 }
 
-# Output Cognito User Pool ID
-output "cognito_user_pool_id" {
-  value = aws_cognito_user_pool.main.id
-}
-
-# Output Cognito Client ID
-output "cognito_client_id" {
-  value = aws_cognito_user_pool_client.client.id
-}
 
 # CloudFront Origin Access Identity
 resource "aws_cloudfront_origin_access_identity" "oai" {
-  comment = "OAI for ${aws_s3_bucket.bucket.id}"
+  comment = "OAI for ${aws_s3_bucket.project_bucket.id}"
 }

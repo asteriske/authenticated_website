@@ -7,19 +7,24 @@ terraform {
   }
 }
 
+locals {
+  env = "dev"
+}
+
 # This creates an AWS bucket and a lambda function
 
-resource "aws_s3_bucket" "my_s3_bucket" {
-  bucket = "my_s3_bucket"
+resource "aws_s3_bucket" "project_bucket" {
+  bucket = "media-auth-website-${local.env}"
   
   tags = {
-    Name        = "My S3 Bucket"
-    Environment = "Dev"
+    Name        = "Media Auth Website"
+    Environment = local.env
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "my_s3_bucket" {
-  bucket = aws_s3_bucket.my_s3_bucket.id
+# allow public access
+resource "aws_s3_bucket_public_access_block" "project_bucket" {
+  bucket = aws_s3_bucket.project_bucket.id
 
   block_public_acls       = false
   block_public_policy     = false
@@ -27,38 +32,41 @@ resource "aws_s3_bucket_public_access_block" "my_s3_bucket" {
   restrict_public_buckets = false
 }
 
-resource "aws_s3_bucket_ownership_controls" "my_s3_bucket" {
-  bucket = aws_s3_bucket.my_s3_bucket.id
+# Objects uploaded with the bucket-owner-full-control canned ACL will belong to the bucket owner,
+# object owner retains control in other circumstances
+resource "aws_s3_bucket_ownership_controls" "project_bucket" {
+  bucket = aws_s3_bucket.project_bucket.id
   rule {
     object_ownership = "BucketOwnerPreferred"
   }
 }
 
-resource "aws_s3_bucket_acl" "my_s3_bucket" {
+resource "aws_s3_bucket_acl" "project_bucket" {
   depends_on = [
-    aws_s3_bucket_ownership_controls.my_s3_bucket,
-    aws_s3_bucket_public_access_block.my_s3_bucket,
+    aws_s3_bucket_ownership_controls.project_bucket,
+    aws_s3_bucket_public_access_block.project_bucket,
   ]
 
-  bucket = aws_s3_bucket.my_s3_bucket.id
+  bucket = aws_s3_bucket.project_bucket.id
   acl    = "public-read"
 }
 
-resource "aws_s3_bucket_policy" "my_s3_bucket" {
-  bucket = aws_s3_bucket.my_s3_bucket.id
+# allow CloudFront read access
+# resource "aws_s3_bucket_policy" "project_bucket" {
+#   bucket = aws_s3_bucket.project_bucket.id
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Sid       = "CloudFrontReadGetObject"
-        Effect    = "Allow"
-        Principal = {
-          AWS = aws_cloudfront_origin_access_identity.oai.iam_arn
-        }
-        Action   = "s3:GetObject"
-        Resource = "${aws_s3_bucket.my_s3_bucket.arn}/*"
-      },
-    ]
-  })
-}
+#   policy = jsonencode({
+#     Version = "2012-10-17"
+#     Statement = [
+#       {
+#         Sid       = "CloudFrontReadGetObject"
+#         Effect    = "Allow"
+#         Principal = {
+#           AWS = aws_cloudfront_origin_access_identity.oai.iam_arn
+#         }
+#         Action   = "s3:GetObject"
+#         Resource = "${aws_s3_bucket.project_bucket.arn}/*"
+#       },
+#     ]
+#   })
+# }
