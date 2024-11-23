@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "AWS Lambda functions",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "./build/package-lambda.sh"
   },
   "dependencies": {
     "aws-jwt-verify": "^4.0.0"
