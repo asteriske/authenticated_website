@@ -83,6 +83,51 @@ resource "aws_lambda_function" "auth_lambda" {
   ]
 }
 
+# CloudWatch Log Group for CloudFront
+resource "aws_cloudwatch_log_group" "cloudfront" {
+  provider = aws.us-east-1
+  name     = "/aws/cloudfront/auth-website"
+  retention_in_days = 14
+}
+
+# IAM Role for CloudFront logging
+resource "aws_iam_role" "cloudfront_logging" {
+  name = "cloudfront-logging-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "cloudfront.amazonaws.com"
+        }
+      }
+    ]
+  })
+}
+
+# IAM Policy for CloudFront logging
+resource "aws_iam_role_policy" "cloudfront_logging" {
+  name = "cloudfront-logging-policy"
+  role = aws_iam_role.cloudfront_logging.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "${aws_cloudwatch_log_group.cloudfront.arn}:*"
+      }
+    ]
+  })
+}
+
 # CloudFront distribution
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
@@ -119,6 +164,18 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
       event_type   = "viewer-request"
       lambda_arn   = aws_lambda_function.auth_lambda.qualified_arn
       include_body = false
+    }
+
+    logging_config {
+      include_cookies = false
+      bucket         = ""  # Real-time logging to CloudWatch, no S3 bucket needed
+      prefix         = ""
+
+      cloudwatch_logging_config {
+        enabled = true
+        log_group_arn = "${aws_cloudwatch_log_group.cloudfront.arn}:*"
+        sampling_rate = 100
+      }
     }
   }
 
