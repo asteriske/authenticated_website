@@ -15,12 +15,17 @@ if [ -z "$USER_POOL_ID" ] || [ -z "$CLIENT_ID" ]; then
     exit 1
 fi
 
-# Try to create user, but don't fail if user exists
+# Delete existing user if it exists
+aws cognito-idp admin-delete-user \
+    --user-pool-id $USER_POOL_ID \
+    --username user123 || true
+
+# Create new user
 aws cognito-idp admin-create-user \
     --user-pool-id $USER_POOL_ID \
     --username user123 \
     --temporary-password Pass123!@ \
-    --message-action SUPPRESS || true
+    --message-action SUPPRESS
 
 echo "Setting/confirming permanent password..."
 
