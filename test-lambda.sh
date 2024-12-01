@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # First build the lambda package
-# ./build/package-lambda.sh
+./build/package-lambda.sh
 
 # Change to terraform directory
 cd terraform
