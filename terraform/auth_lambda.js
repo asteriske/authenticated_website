@@ -1,16 +1,15 @@
 const { CognitoJwtVerifier } = require("aws-jwt-verify");
 
-// Log environment variables
-console.error('Environment variables:', {
-    userPoolId: process.env.COGNITO_USER_POOL_ID,
-    clientId: process.env.COGNITO_CLIENT_ID
-});
-
 // Initialize the verifier outside the handler for better performance
 const verifier = CognitoJwtVerifier.create({
-    userPoolId: process.env.COGNITO_USER_POOL_ID,
+    userPoolId: "us-east-2_ZAFeDBuHQ",
     tokenUse: "access",
-    clientId: process.env.COGNITO_CLIENT_ID,
+    clientId: "5c2mtdrgbh82ljbgtl561en9i8",
+});
+
+console.error('Verifier configured with:', {
+    userPoolId: "us-east-2_ZAFeDBuHQ",
+    clientId: "5c2mtdrgbh82ljbgtl561en9i8"
 });
 
 exports.handler = async (event) => {
