@@ -179,29 +179,17 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   logging_config {
     include_cookies = false
-    bucket         = aws_s3_bucket.cloudfront_logs.bucket_domain_name
-    prefix         = "cloudfront-logs/"
+    bucket         = ""  # Required field but empty for CloudWatch logging
+    prefix         = ""
+    
+    cloudwatch_logging_config {
+      enabled        = true
+      log_group_arn  = "${aws_cloudwatch_log_group.cloudfront.arn}:*"
+      sampling_rate  = 100
+    }
   }
 }
 
-
-# S3 bucket for CloudFront logs
-resource "aws_s3_bucket" "cloudfront_logs" {
-  bucket = "cloudfront-logs-${local.env}-${data.aws_caller_identity.current.account_id}"
-}
-
-resource "aws_s3_bucket_ownership_controls" "cloudfront_logs" {
-  bucket = aws_s3_bucket.cloudfront_logs.id
-  rule {
-    object_ownership = "BucketOwnerPreferred"
-  }
-}
-
-resource "aws_s3_bucket_acl" "cloudfront_logs" {
-  depends_on = [aws_s3_bucket_ownership_controls.cloudfront_logs]
-  bucket = aws_s3_bucket.cloudfront_logs.id
-  acl    = "private"
-}
 
 # Get current AWS account ID
 data "aws_caller_identity" "current" {}
