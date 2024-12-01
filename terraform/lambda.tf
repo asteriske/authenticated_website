@@ -177,11 +177,6 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     cloudfront_default_certificate = true
   }
 
-  cloudwatch_logging_config {
-    enabled        = true
-    log_group_arn  = "${aws_cloudwatch_log_group.cloudfront.arn}:*"
-    sampling_rate  = 100
-  }
 }
 
 
