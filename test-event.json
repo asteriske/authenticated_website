@@ -3,3 +3,8 @@
     "Authorization": "Bearer YOUR_TEST_JWT_TOKEN"
   }
 }
+{
+  "headers": {
+    "Authorization": "Bearer eyJraWQiOiJtb2NrLXRva2VuIiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJ0ZXN0LXVzZXIiLCJ1c2VybmFtZSI6InRlc3QtdXNlciIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUiLCJleHAiOjE3MjUwMzIwMDB9.mock-signature"
+  }
+}
