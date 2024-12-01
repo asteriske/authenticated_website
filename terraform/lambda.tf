@@ -165,18 +165,6 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
       lambda_arn   = aws_lambda_function.auth_lambda.qualified_arn
       include_body = false
     }
-
-    logging_config {
-      include_cookies = false
-      bucket         = ""  # Real-time logging to CloudWatch, no S3 bucket needed
-      prefix         = ""
-
-      cloudwatch_logging_config {
-        enabled = true
-        log_group_arn = "${aws_cloudwatch_log_group.cloudfront.arn}:*"
-        sampling_rate = 100
-      }
-    }
   }
 
   restrictions {
@@ -188,8 +176,35 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   viewer_certificate {
     cloudfront_default_certificate = true
   }
+
+  logging_config {
+    include_cookies = false
+    bucket         = aws_s3_bucket.cloudfront_logs.bucket_domain_name
+    prefix         = "cloudfront-logs/"
+  }
 }
 
+
+# S3 bucket for CloudFront logs
+resource "aws_s3_bucket" "cloudfront_logs" {
+  bucket = "cloudfront-logs-${local.env}-${data.aws_caller_identity.current.account_id}"
+}
+
+resource "aws_s3_bucket_ownership_controls" "cloudfront_logs" {
+  bucket = aws_s3_bucket.cloudfront_logs.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "cloudfront_logs" {
+  depends_on = [aws_s3_bucket_ownership_controls.cloudfront_logs]
+  bucket = aws_s3_bucket.cloudfront_logs.id
+  acl    = "private"
+}
+
+# Get current AWS account ID
+data "aws_caller_identity" "current" {}
 
 # CloudFront Origin Access Identity
 resource "aws_cloudfront_origin_access_identity" "oai" {
