@@ -3,7 +3,7 @@ const { CognitoJwtVerifier } = require("aws-jwt-verify");
 exports.handler = async (event) => {
     // Initialize the verifier
     const verifier = CognitoJwtVerifier.create({
-        userPoolId: "us-east-2_HlPshUu7f",
+        userPoolId: "us-east-2_ZAFeDBuHQ",
         tokenUse: "access",
         clientId: "5c2mtdrgbh82ljbgtl561en9i8",
     });
