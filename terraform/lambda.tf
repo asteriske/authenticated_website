@@ -76,6 +76,12 @@ resource "aws_lambda_function" "auth_lambda" {
   publish         = true
   provider        = aws.us-east-1  # Specify us-east-1 provider for Lambda@Edge
 
+  environment {
+    variables = {
+      COGNITO_USER_POOL_ID = aws_cognito_user_pool.main.id
+      COGNITO_CLIENT_ID    = aws_cognito_user_pool_client.client.id
+    }
+  }
 
   depends_on = [
     aws_cognito_user_pool.main,
