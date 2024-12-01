@@ -1,16 +1,19 @@
 const { CognitoJwtVerifier } = require("aws-jwt-verify");
 
-// Initialize the verifier outside the handler for better performance
-const verifier = CognitoJwtVerifier.create({
-    userPoolId: "us-east-2_ZAFeDBuHQ",
-    tokenUse: "access",
-    clientId: "5c2mtdrgbh82ljbgtl561en9i8",
-});
-
-console.error('Verifier configured with:', {
+// Configuration values hardcoded for Lambda@Edge (which doesn't support environment variables)
+const CONFIG = {
     userPoolId: "us-east-2_ZAFeDBuHQ",
     clientId: "5c2mtdrgbh82ljbgtl561en9i8"
+};
+
+// Initialize the verifier outside the handler for better performance
+const verifier = CognitoJwtVerifier.create({
+    userPoolId: CONFIG.userPoolId,
+    tokenUse: "access",
+    clientId: CONFIG.clientId,
 });
+
+console.error('Verifier configured with:', CONFIG);
 
 // Helper function to decode JWT without verification
 function decodeJwt(token) {
