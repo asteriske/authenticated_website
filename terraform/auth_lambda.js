@@ -2,13 +2,13 @@ const { CognitoJwtVerifier } = require("aws-jwt-verify");
 
 // Initialize the verifier outside the handler for better performance
 const verifier = CognitoJwtVerifier.create({
-    userPoolId: "us-east-2_ZAFeDBuHQ",
+    userPoolId: "us-east-2_HlPshUu7f",
     tokenUse: "access",
     clientId: "5c2mtdrgbh82ljbgtl561en9i8",
 });
 
 console.error('Verifier configured with:', {
-    userPoolId: "us-east-2_ZAFeDBuHQ",
+    userPoolId: "us-east-2_HlPshUu7f",
     clientId: "5c2mtdrgbh82ljbgtl561en9i8"
 });
 
