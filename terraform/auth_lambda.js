@@ -12,6 +12,21 @@ console.error('Verifier configured with:', {
     clientId: "5c2mtdrgbh82ljbgtl561en9i8"
 });
 
+// Helper function to decode JWT without verification
+function decodeJwt(token) {
+    try {
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+            return null;
+        }
+        const payload = Buffer.from(parts[1], 'base64').toString();
+        return JSON.parse(payload);
+    } catch (e) {
+        console.error('Error decoding token:', e);
+        return null;
+    }
+}
+
 exports.handler = async (event) => {
     try {
         // Parse the authorization header
@@ -39,6 +54,10 @@ exports.handler = async (event) => {
         // Extract the token
         const token = authHeader.split(' ')[1];
         console.error('Token to verify:', token.substring(0, 20) + '...');
+        
+        // Decode token without verification for debugging
+        const decodedToken = decodeJwt(token);
+        console.error('Decoded token payload:', decodedToken);
         
         try {
             // Verify the JWT token
