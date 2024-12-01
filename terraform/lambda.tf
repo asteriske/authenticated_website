@@ -177,6 +177,11 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     cloudfront_default_certificate = true
   }
 
+  logging_config {
+    include_cookies = false
+    bucket          = aws_s3_bucket.cloudfront_logs.bucket_regional_domain_name
+    prefix          = "cloudfront/"
+  }
 }
 
 

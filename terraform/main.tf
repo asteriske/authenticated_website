@@ -23,6 +23,29 @@ provider "aws" {
 
 # This creates an AWS bucket and a lambda function
 
+# Logging bucket for CloudFront
+resource "aws_s3_bucket" "cloudfront_logs" {
+  bucket = "media-auth-website-logs-${local.env}"
+  
+  tags = {
+    Name        = "CloudFront Logs"
+    Environment = local.env
+  }
+}
+
+resource "aws_s3_bucket_ownership_controls" "cloudfront_logs" {
+  bucket = aws_s3_bucket.cloudfront_logs.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "cloudfront_logs" {
+  depends_on = [aws_s3_bucket_ownership_controls.cloudfront_logs]
+  bucket = aws_s3_bucket.cloudfront_logs.id
+  acl    = "private"
+}
+
 resource "aws_s3_bucket" "project_bucket" {
   bucket = "media-auth-website-${local.env}"
   
