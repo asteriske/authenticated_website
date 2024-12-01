@@ -3,6 +3,12 @@
 # First build the lambda package
 ./build/package-lambda.sh
 
+# Update the Lambda function with the new code
+FUNCTION_NAME=$(cd terraform && terraform output -raw auth_lambda_function_name)
+aws lambda update-function-code \
+    --function-name "$FUNCTION_NAME" \
+    --zip-file fileb://dist/auth-lambda.zip
+
 # Change to terraform directory
 cd terraform
 
