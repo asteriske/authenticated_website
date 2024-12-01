@@ -24,26 +24,26 @@ resource "aws_cognito_user_pool_client" "client" {
   ]
 }
 
-# # CloudWatch Logs policy
-# resource "aws_iam_role_policy" "lambda_cloudwatch_logs" {
-#   name = "lambda_cloudwatch_logs"
-#   role = aws_iam_role.lambda_edge_role.id
+# CloudWatch Logs policy
+resource "aws_iam_role_policy" "lambda_cloudwatch_logs" {
+  name = "lambda_cloudwatch_logs"
+  role = aws_iam_role.lambda_edge_role.id
 
-#   policy = jsonencode({
-#     Version = "2012-10-17"
-#     Statement = [
-#       {
-#         Effect = "Allow"
-#         Action = [
-#           "logs:CreateLogGroup",
-#           "logs:CreateLogStream",
-#           "logs:PutLogEvents"
-#         ]
-#         Resource = "arn:aws:logs:*:*:*"
-#       }
-#     ]
-#   })
-# }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "arn:aws:logs:*:*:*"
+      }
+    ]
+  })
+}
 
 # IAM role for Lambda@Edge
 resource "aws_iam_role" "lambda_edge_role" {

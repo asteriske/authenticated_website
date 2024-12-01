@@ -1,7 +1,7 @@
 const { CognitoJwtVerifier } = require("aws-jwt-verify");
 
 // Log environment variables
-console.log('Environment variables:', {
+console.error('Environment variables:', {
     userPoolId: process.env.COGNITO_USER_POOL_ID,
     clientId: process.env.COGNITO_CLIENT_ID
 });
@@ -39,13 +39,13 @@ exports.handler = async (event) => {
 
         // Extract the token
         const token = authHeader.split(' ')[1];
-        console.log('Token to verify:', token.substring(0, 20) + '...');
+        console.error('Token to verify:', token.substring(0, 20) + '...');
         
         try {
             // Verify the JWT token
-            console.log('Attempting to verify token...');
+            console.error('Attempting to verify token...');
             const payload = await verifier.verify(token);
-            console.log('Token verified successfully:', payload);
+            console.error('Token verified successfully:', payload);
             
             return {
                 statusCode: 200,
